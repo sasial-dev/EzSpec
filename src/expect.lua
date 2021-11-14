@@ -1,8 +1,6 @@
-local Types = require(script.Parent.Types)
+local expect = { }
 
-local this = { }
-
-function this:_assert(result, tail, ...)
+function expect:_assert(result, tail, ...)
 	tail = tail or "pass"
 
 	assert(
@@ -15,7 +13,7 @@ function this:_assert(result, tail, ...)
 	)
 end
 
-function this:_assertType(value, type_s, methodName)
+function expect:_assertType(value, type_s, methodName)
 	local typeOf = typeof(value)
 
 	if typeof(type_s) == "table" then
@@ -41,7 +39,7 @@ function this:_assertType(value, type_s, methodName)
 	end
 end
 
-function this:_result(func)
+function expect:_result(func)
 	local returned = { func(); }
 	local result = table.remove(returned, 1)
 	if self._invert then
@@ -51,12 +49,12 @@ function this:_result(func)
 	return result, table.unpack(returned)
 end
 
-function this.invert(self)
+function expect.invert(self)
 	rawset(self, "_invert", not self._invert)
 end
-this.never = this.invert
+expect.never = expect.invert
 
-function this.exist(self, value)
+function expect.exist(self, value)
 	return function()
 		local result = self:_result(function()
 			return value ~= nil
@@ -65,10 +63,10 @@ function this.exist(self, value)
 		self:_assert(result, "exist, got '%s'", tostring(value))
 	end
 end
-this.exists = this.exist
-this.ok = this.exist
+expect.exists = expect.exist
+expect.ok = expect.exist
 
-function this.equal(self, value)
+function expect.equal(self, value)
 	return function(expectedValue: any)
 		local result = self:_result(function()
 			return value == expectedValue
@@ -82,9 +80,9 @@ function this.equal(self, value)
 		)
 	end
 end
-this.equals = this.equal
+expect.equals = expect.equal
 
-function this.isType(self, value)
+function expect.isType(self, value)
 	return function(expectedType: string)
 		local result = self:_result(function()
 			return typeof(value) == expectedType
@@ -98,9 +96,9 @@ function this.isType(self, value)
 		)
 	end
 end
-this.aType = this.isType
+expect.aType = expect.isType
 
-function this.isClass(self, value)
+function expect.isClass(self, value)
 	return function(expectedClassName: string)
 		local result = self:_result(function()
 			return typeof(value) == "Instance" and value:IsA(expectedClassName)
@@ -114,10 +112,10 @@ function this.isClass(self, value)
 		)
 	end
 end
-this.aClass = this.isClass
-this.instanceOf = this.isClass
+expect.aClass = expect.isClass
+expect.instanceOf = expect.isClass
 
-function this.error(self, value, index)
+function expect.error(self, value, index)
 	self:_assertType(value, "function", index)
 
 	return function()
@@ -135,13 +133,13 @@ function this.error(self, value, index)
 		)
 	end
 end
-this.errors = this.error
-this.fail = this.error
-this.fails = this.error
-this.throw = this.error
-this.throws = this.error
+expect.errors = expect.error
+expect.fail = expect.error
+expect.fails = expect.error
+expect.throw = expect.error
+expect.throws = expect.error
 
-function this.match(self, value)
+function expect.match(self, value)
 	return function(pattern: string)
 		local result = self:_result(function()
 			return string.match(tostring(value), pattern) ~= nil
@@ -150,9 +148,9 @@ function this.match(self, value)
 		self:_assert(result, "match '%s'", pattern)
 	end
 end
-this.matches = this.match
+expect.matches = expect.match
 
-function this.contain(self, value, index)
+function expect.contain(self, value, index)
 	self:_assertType(value, { "table"; "string"; }, index)
 
 	return function(expectedValue: any)
@@ -173,10 +171,10 @@ function this.contain(self, value, index)
 		self:_assert(result, "contain '%s'", tostring(expectedValue))
 	end
 end
-this.contains = this.contain
-this.has = this.contain
+expect.contains = expect.contain
+expect.has = expect.contain
 
-function this.containOnly(self, value, index)
+function expect.containOnly(self, value, index)
 	self:_assertType(value, "table", index)
 
 	return function(expectedType: string)
@@ -192,10 +190,10 @@ function this.containOnly(self, value, index)
 		self:_assert(result, "contain only '%s' type", expectedType)
 	end
 end
-this.containsOnly = this.containOnly
-this.hasOnly = this.containOnly
+expect.containsOnly = expect.containOnly
+expect.hasOnly = expect.containOnly
 
-function this.near(self, value, index)
+function expect.near(self, value, index)
 	self:_assertType(value, "number", index)
 
 	return function(nearValue: number, nearLimit: number?)
@@ -215,10 +213,10 @@ function this.near(self, value, index)
 		)
 	end
 end
-this.nears = this.near
-this.nearly = this.near
+expect.nears = expect.near
+expect.nearly = expect.near
 
-function this.between(self, value, index)
+function expect.between(self, value, index)
 	self:_assertType(value, "number", index)
 
 	return function(minValue: number, maxValue: number)
@@ -236,12 +234,12 @@ function this.between(self, value, index)
 	end
 end
 
-this.__index = function(self, index)
+expect.__index = function(self, index)
 	if string.sub(index, 1, 1) == "_" then
-		return rawget(self, index) or rawget(this, index)
+		return rawget(self, index) or rawget(expect, index)
 	end
 
-	local method = rawget(this, index)
+	local method = rawget(expect, index)
 	if method and typeof(method) == "function" then
 		local value = rawget(self, "_value")
 		local result = method(self, value, index)
@@ -253,8 +251,8 @@ this.__index = function(self, index)
 	return self
 end
 
-this.__newindex = function()
-	error("'this' is read-only")
+expect.__newindex = function()
+	error("'expect' is read-only")
 end
 
 return function(value: any)
@@ -262,5 +260,5 @@ return function(value: any)
 		_value = value;
 		_invert = false;
 		_traceback = debug.traceback(2);
-	}, this)
+	}, expect)
 end
