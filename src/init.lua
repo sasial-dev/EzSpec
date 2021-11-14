@@ -1,6 +1,6 @@
 return setmetatable({
 	runTests = require(script.runTests);
-	this = require(script.this);
+	expect = require(script.expect);
 	declare = require(script.declare);
 }, {
 	-- Taken from BoatTEST
