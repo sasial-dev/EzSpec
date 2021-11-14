@@ -1,14 +1,19 @@
-# Roblox Build Tools
+# Luau Packaging
 wally.toml
 foreman.toml
 
-# Luau Lints
+# Lints
 selene.toml
 roblox.toml
 stylua.toml
+.eslintrc.json
 
 # Tests
 tests/
+tests.project.json
+
+# Non-Compiled Declaration Files
+src/
 
 # Editor-Settings
 .vscode/
@@ -52,9 +57,6 @@ build/Release
 
 # Dependency directories
 node_modules/
-
-# TypeScript cache
-*.tsbuildinfo
 
 # Optional npm cache directory
 .npm

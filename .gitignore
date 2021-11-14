@@ -12,6 +12,9 @@
 *.zip
 *.rar
 
+# roblox-ts TS build
+out/
+
 # Truncenated Node .gitignore file below -> Taken from https://github.com/github/gitignore/blob/master/Node.gitignore
 
 # Logs

@@ -1,6 +1,6 @@
 {
   "name": "ezspec",
   "tree": {
-    "$path": "src"
+    "$path": "out"
   }
 }
