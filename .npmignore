@@ -1,3 +1,18 @@
+# Roblox Build Tools
+wally.toml
+foreman.toml
+
+# Luau Lints
+selene.toml
+roblox.toml
+stylua.toml
+
+# Tests
+tests/
+
+# Editor-Settings
+.vscode/
+
 # Project place file
 *.rbxlx
 
